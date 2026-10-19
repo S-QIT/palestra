@@ -189,6 +189,11 @@ details.more .inner{display:grid;gap:10px;padding-top:8px}
 #timer .btns{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 #timer .btns button{padding:8px 12px;border-radius:10px;background:var(--sunk);font-weight:700;font-size:14px}
 #timer .btns .skip{background:var(--ink);color:var(--bg)}
+#timer.prep .ring .fg{stroke:var(--muted)}
+#timer.prep .lab{color:var(--muted)}
+#timer.flip .lab{animation:flipin .45s ease}
+@keyframes flipin{0%{transform:translateY(8px);opacity:0}100%{transform:none;opacity:1}}
+#timer .lab{font-size:24px}
 #timer.ended{animation:flash .5s ease 3}
 #timer.ended .lab{color:var(--ok)}
 @keyframes flash{50%{background:var(--ok)}}
@@ -302,6 +307,16 @@ const POST=[{id:'acqua',name:'Acqua',cue:'Mezzo litro subito.'},{id:'creatina',n
 const HOW={"cardio": {"m": "Riscaldamento generale", "s": ["Regola la sella: a pedale in basso il ginocchio resta appena flesso.", "Resistenza bassa, cadenza sciolta (70-80 pedalate al minuto).", "Ritmo da conversazione: devi riuscire a parlare senza fiatone."], "e": "Partire forte: qui serve solo scaldare."}, "mob-spalle": {"m": "Spalle, trapezi", "s": ["In piedi, braccia rilassate lungo i fianchi.", "Porta le spalle su verso le orecchie, poi indietro, giù e avanti: un cerchio ampio.", "30\" in un senso, poi 30\" nell'altro, lento."], "e": "Muovere le braccia invece delle spalle."}, "mob-torace": {"m": "Petto, spalle anteriori", "s": ["In piedi, braccia tese davanti all'altezza delle spalle.", "Aprile all'indietro portando le scapole a toccarsi, petto in fuori.", "Richiudi davanti e ripeti con ritmo controllato per 60\"."], "e": "Inarcare la zona lombare per aprire di più."}, "mob-anche": {"m": "Anche, glutei", "s": ["In piedi, una mano su un appoggio per l'equilibrio.", "Solleva il ginocchio all'altezza dell'anca e disegna un cerchio verso l'esterno.", "15\" per gamba in un senso, poi 15\" per gamba nel senso opposto."], "e": "Ruotare il busto insieme alla gamba."}, "mob-caviglie": {"m": "Caviglie, polpacci", "s": ["Mani al muro, un piede avanti e uno indietro.", "Spingi il ginocchio davanti oltre la punta del piede, tallone sempre a terra.", "Molleggia piano 30\" per lato. Prepara caviglie per pressa e affondi."], "e": "Staccare il tallone dal pavimento."}, "plank": {"m": "Addome, core", "s": ["Avambracci a terra, gomiti esattamente sotto le spalle.", "Corpo in linea da testa a talloni: glutei e addome contratti.", "Respira normale e tieni la posizione per il tempo indicato."], "e": "Bacino che cade o glutei troppo alti."}, "pallof": {"m": "Addome, obliqui (anti-rotazione)", "s": ["Cavo all'altezza del petto, ti metti di fianco alla colonna, mezzo passo via.", "Piede lato cavo arretrato, peso sul piede lontano. Maniglia al petto con due mani.", "Spingi le braccia dritte davanti al petto (non verso il cavo), tieni 2\" senza farti ruotare, torna.","Finite le 10, girati dall'altra parte e ripeti: ogni serie = entrambi i lati."], "e": "Lasciarsi tirare verso il cavo ruotando il busto."}, "squat-leva": {"m": "Quadricipiti, glutei", "s": ["Schiena tutta appoggiata, spalle sotto i cuscinetti, piedi a metà pedana larghezza spalle.", "Sblocca il fermo e scendi controllato fino a cosce parallele.", "Spingi con tutto il piede e risali senza bloccare le ginocchia."], "e": "Ginocchia che cedono verso l'interno, talloni che si staccano."}, "panca": {"m": "Petto, tricipiti, spalle anteriori", "s": ["Sdraiato, occhi sotto il bilanciere, piedi a terra. Scapole strette e basse.", "Presa poco più larga delle spalle. Stacca e porta il bilanciere sopra il petto.", "Scendi controllato a metà sterno, gomiti a 45° dal busto, e spingi su."], "e": "Rimbalzare sul petto o staccare i glutei dalla panca."}, "lat": {"m": "Dorsali, bicipiti", "s": ["Seduto con cosce bloccate, presa larga sulla barra.", "Petto alto, porta la barra alla parte alta del petto tirando i gomiti giù e indietro.", "Risali lento fino a braccia quasi tese."], "e": "Dondolare col busto o tirare dietro la nuca."}, "iperestensioni": {"m": "Lombari, glutei, femorali", "s": ["Anche appoggiate al cuscino, caviglie bloccate, braccia incrociate sul petto.", "Scendi piegandoti dalle anche, schiena dritta.", "Risali fino a corpo in linea con le gambe, non oltre. 2\" su e 2\" giù."], "e": "Iperestendere la schiena in alto."}, "military": {"m": "Spalle, tricipiti", "s": ["Seduto con schienale verticale, manubri all'altezza delle orecchie, palmi avanti.", "Spingi in alto finché le braccia sono quasi tese, i manubri si avvicinano.", "Scendi controllato fino all'altezza delle orecchie."], "e": "Inarcare la schiena staccandola dallo schienale."}, "alzate": {"m": "Deltoide laterale", "s": ["In piedi, manubri ai fianchi, gomiti appena piegati.", "Alza le braccia di lato fino all'altezza delle spalle, mignolo leggermente alto.", "Scendi lento, senza appoggiare i manubri ai fianchi."], "e": "Slanciare col busto o salire oltre le spalle."}, "rematore": {"m": "Dorsali, romboidi, bicipiti", "s": ["Ginocchio e mano dello stesso lato sulla panca, schiena piatta.", "Tira il manubrio portando il gomito verso l'anca, vicino al corpo.", "Scendi fino a braccio teso, senza ruotare il busto."], "e": "Ruotare il busto per tirare più peso."}, "curl-alt": {"m": "Bicipiti", "s": ["In piedi, manubri ai fianchi, palmi verso le cosce.", "Sali con un braccio ruotando il polso verso l'alto, gomito fermo al fianco.", "Scendi lento e alterna l'altro braccio."], "e": "Portare il gomito avanti o slanciare."}, "pushdown": {"m": "Tricipiti", "s": ["Davanti al cavo alto, presa sulla barra, gomiti incollati ai fianchi.", "Spingi giù fino a braccia completamente tese.", "Risali controllato fino ad avambracci paralleli al pavimento."], "e": "Muovere i gomiti avanti e indietro."}, "croci-cavi": {"m": "Petto, zona sternale", "s": ["In piedi al centro, cavi in posizione 12 (metà altezza), un piede avanti.", "Gomiti appena piegati e fissi: porta le mani avanti con un arco.", "Incrocia oltre la linea centrale, tieni 1\" stringendo il petto, torna lento."], "e": "Piegare i gomiti trasformandola in una spinta."}, "chest-press": {"m": "Petto, tricipiti", "s": ["Seduto, maniglie all'altezza del petto, schiena appoggiata.", "Spingi avanti fino a braccia quasi tese, senza staccare le scapole.", "Torna lento fino a sentire l'allungo del petto."], "e": "Bloccare i gomiti in fondo al movimento."}, "affondi": {"m": "Quadricipiti, glutei", "s": ["In piedi, fai un passo lungo in avanti.", "Scendi finché il ginocchio dietro sfiora il pavimento, busto dritto.", "Spingi col tallone davanti e torna su; alterna le gambe."], "e": "Ginocchio davanti che crolla verso l'interno."}, "pressa": {"m": "Quadricipiti, glutei", "s": ["Schiena e glutei appoggiati, piedi a metà pedana larghezza spalle.", "Sblocca e scendi finché le ginocchia arrivano a 90°.", "Spingi con tutto il piede senza bloccare le ginocchia in alto."], "e": "Staccare i glutei dallo schienale in fondo."}, "croci-incl": {"m": "Petto alto", "s": ["Panca a 30°, manubri sopra il petto, palmi che si guardano.", "Gomiti appena piegati e fissi: apri le braccia a ventaglio.", "Scendi fino a sentire l'allungo, poi richiudi come ad abbracciare un albero."], "e": "Scendere troppo con carico pesante."}, "curl-cavi": {"m": "Bicipiti", "s": ["Doppia puleggia, cavo basso, presa con palmi in su.", "Gomiti fermi ai fianchi, porta le mani verso le spalle.", "Scendi lento mantenendo la tensione, senza rilassare in alto."], "e": "Muovere i gomiti in avanti."}, "skull": {"m": "Tricipiti", "s": ["Sdraiato sulla panca, manubrio a due mani a coppa sotto il disco, braccia verso il soffitto.", "Gomiti fermi: piega solo gli avambracci portando il manubrio verso la fronte.", "Estendi di nuovo fino a braccia tese."], "e": "Aprire i gomiti o muoverli avanti e indietro."}, "st-petto": {"m": "Petto, spalla anteriore", "s": ["Di fianco al muro o allo stipite, avambraccio appoggiato con gomito a 90°.", "Ruota busto e piedi lentamente dalla parte opposta.", "Tieni 30\" per lato respirando. Dopo croci e chest press è il più importante."], "e": "Forzare fino al dolore alla spalla."}, "st-tricipite": {"m": "Tricipiti", "s": ["Alza un braccio e piega il gomito: mano dietro la nuca.", "Con l'altra mano spingi il gomito indietro e in basso.", "Tieni 30\" per lato."], "e": "Inarcare la schiena."}, "st-bicipite": {"m": "Bicipiti, spalla anteriore", "s": ["Mani intrecciate dietro la schiena, braccia tese.", "Solleva leggermente le braccia aprendo il petto.", "Tieni 30\". In alternativa: palmo al muro dietro di te e ruota via."], "e": "Piegare i gomiti."}, "st-quad": {"m": "Quadricipiti", "s": ["Collo del piede appoggiato su una panca dietro di te, oppure afferra la caviglia in piedi.", "Ginocchia vicine, bacino spinto leggermente in avanti.", "Tieni 30\" per lato."], "e": "Inarcare la schiena invece di spingere il bacino."}, "st-femorali": {"m": "Femorali, polpacci", "s": ["Una gamba tesa avanti, tallone a terra e punta verso di te.", "Piegati in avanti dalle anche con la schiena dritta.", "Tieni 30\" per lato senza molleggiare."], "e": "Curvare la schiena per arrivare più in basso."}, "st-glutei": {"m": "Glutei, piriforme", "s": ["Sdraiato o seduto, caviglia appoggiata sul ginocchio opposto (figura 4).", "Avvicina la gamba d'appoggio al petto (o porta il busto avanti se seduto).", "Tieni 30\" per lato."], "e": "Spingere sul ginocchio fino a sentire fastidio."}, "st-flessori": {"m": "Flessori dell'anca, quadricipite", "s": ["Un ginocchio a terra, l'altro piede avanti a 90°.", "Contrai il gluteo e spingi il bacino in avanti, busto dritto.", "Tieni 30\" per lato. Dopo affondi e pressa serve molto."], "e": "Inarcare la zona lombare."}, "st-dorsali": {"m": "Dorsali, schiena", "s": ["In ginocchio, siediti sui talloni.", "Allunga le braccia avanti a terra e lascia scendere il petto.", "Tieni 60\" respirando lento verso la schiena."], "e": "Tenere le spalle contratte."}};
 const IMGV='6';
 const HAS_IMG=new Set(["cardio", "mob-spalle", "mob-torace", "mob-anche", "mob-caviglie", "plank", "pallof", "squat-leva", "panca", "lat", "iperestensioni", "military", "alzate", "rematore", "curl-alt", "pushdown", "croci-cavi", "chest-press", "affondi", "pressa", "croci-incl", "curl-cavi", "skull", "st-petto", "st-tricipite", "st-bicipite", "st-quad", "st-femorali", "st-glutei", "st-flessori", "st-dorsali"]);
+const PH_CUSTOM={
+ 'mob-spalle':[['Cerchi indietro',30],['Cerchi avanti',30,'Inverti il senso',2]],
+ 'mob-anche':[['Gamba destra · verso fuori',15],['Gamba sinistra · verso fuori',15,'Cambia gamba',3],['Gamba destra · verso dentro',15,'Cambia gamba',3],['Gamba sinistra · verso dentro',15,'Cambia gamba',3]]
+};
+function phasesFor(it){
+  const raw=PH_CUSTOM[it.id]||(it.half?[['Lato destro',it.dur/2],['Lato sinistro',it.dur/2,'Cambia lato',5]]:[[it.name,it.dur]]);
+  const out=[];raw.forEach(([lab,t,prepLab,prepT],i)=>{if(i>0&&prepT)out.push({lab:prepLab,t:prepT,prep:true});out.push({lab,t,work:true})});
+  return out;
+}
+function durLabel(it){const w=phasesFor(it).filter(p=>p.work);return w.length>1?`${w.length} × ${fmtRest(w[0].t)}`:fmtRest(it.dur)}
 /* ---------- STORAGE ---------- */
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let db=null, assets=null;
@@ -398,8 +413,8 @@ function simpleRow(item,n,withTimer){
   const d=L(n).checks[item.id];
   const row=`<div class="row ${d?'done':''}" data-simple="${item.id}">
     <button class="chk" data-act="simple" data-id="${item.id}" aria-label="Fatto: ${esc(item.name)}" aria-pressed="${!!d}">${ICON_CHECK}</button>
-    <div class="t"><b>${esc(item.name)}${item.dur?` · ${fmtRest(item.dur)}`:''}</b><small>${esc(item.cue)}</small></div>
-    ${withTimer&&item.dur?`<button class="play" data-act="worktimer" data-id="${item.id}">${ICON_PLAY}${fmtRest(item.dur)}</button>`:'<span></span>'}
+    <div class="t"><b>${esc(item.name)}${item.dur?` · ${durLabel(item)}`:''}</b><small>${esc(item.cue)}</small></div>
+    ${withTimer&&item.dur?`<button class="play" data-act="worktimer" data-id="${item.id}">${ICON_PLAY}${durLabel(item)}</button>`:'<span></span>'}
   </div>`;
   if(!HOW[item.id])return row;
   return `<div class="rowwrap">${HAS_IMG.has(item.id)?`<div class="rowimg">${animBox(item.id,item.name)}</div>`:''}${row}<details class="more" data-more="${item.id}" ${openMore.has(item.id)?'open':''}><summary>Come si fa</summary><div class="inner">${howBlock(item.id)}</div></details></div>`;
@@ -502,11 +517,22 @@ async function requestWake(){try{if('wakeLock' in navigator&&!wake){wake=await n
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(T||(tab!=='h'&&live[tab]&&live[tab].start)))requestWake()});
 
 function startTimer(o){
-  T={...o,end:Date.now()+o.total*1000,paused:null,lastSec:null,halfDone:false,ended:false};
+  T={...o,pi:0,end:Date.now()+o.total*1000,paused:null,lastSec:null,ended:false};
   const el=$('#timer');el.classList.remove('ended');el.classList.toggle('work',o.mode==='work');el.classList.add('on');
   document.body.classList.add('has-timer');
-  $('#tlab').textContent=o.label;$('#tsub').textContent=o.sub||'';$('#tpause').textContent='Pausa';
+  $('#tpause').textContent='Pausa';el.classList.remove('prep');phaseText();
   clearInterval(tInt);tInt=setInterval(tick,200);tick();requestWake();beep(660,.08);
+}
+function phaseText(){
+  if(T.phases&&T.phases.length>1){const p=T.phases[T.pi],works=T.phases.filter(x=>x.work),wi=works.indexOf(p);
+    $('#tlab').textContent=p.lab;$('#tsub').textContent=p.prep?`Preparati · poi ${T.phases[T.pi+1].lab}`:`${T.name} · ${wi+1} di ${works.length}`;}
+  else{$('#tlab').textContent=T.label;$('#tsub').textContent=T.sub||(T.name&&T.name!==T.label?T.name:'');}
+}
+function nextPhase(){
+  T.pi++;const p=T.phases[T.pi];T.total=p.t;T.end=Date.now()+p.t*1000;T.lastSec=null;
+  const el=$('#timer');el.classList.toggle('prep',!!p.prep);el.classList.remove('flip');void el.offsetWidth;el.classList.add('flip');
+  if(p.prep){beep(990,.14);beep(990,.14,.2);buzz([150,80,150])}else{beep(1175,.2);buzz(250)}
+  phaseText();
 }
 function left(){return T.paused!=null?T.paused:(T.end-Date.now())/1000}
 function tick(){
@@ -514,9 +540,8 @@ function tick(){
   $('#tv').textContent=fmtTime(l);
   $('#ringfg').style.strokeDashoffset=String(CIRC*(1-Math.max(0,l)/T.total));
   const sec=Math.ceil(l);
-  if(T.half&&!T.halfDone&&l<=T.total/2){T.halfDone=true;beep(990,.12);beep(990,.12,.18);buzz(150);$('#tsub').textContent='Cambia lato';}
   if(sec<=3&&sec>0&&sec!==T.lastSec){T.lastSec=sec;beep(740,.09)}
-  if(l<=0&&!T.ended)finishTimer();
+  if(l<=0&&!T.ended){if(T.phases&&T.pi<T.phases.length-1)nextPhase();else finishTimer();}
 }
 function finishTimer(){
   T.ended=true;clearInterval(tInt);
@@ -583,7 +608,7 @@ document.addEventListener('click',e=>{
   else if(a==='startsess'){markStart(n);requestWake();render();toast('Sessione iniziata. Parti dal cardio.')}
   else if(a==='worktimer'){
     const it=[CARDIO,...MOB,...STRETCH].find(x=>x.id===b.dataset.id);markStart(n);
-    startTimer({mode:'work',label:it.name,sub:it.half?'Primo lato':'',total:it.dur,half:it.half,onDone:()=>toggleSimple(n,it.id,true)});
+    const ph=phasesFor(it);startTimer({mode:'work',name:it.name,phases:ph,label:ph[0].lab,sub:'',total:ph[0].t,onDone:()=>toggleSimple(n,it.id,true)});
   }
   else if(a==='settimer'){
     const ex=findEx(n,b.dataset.id),i=+b.dataset.i,s=L(n).sets[ex.id][i];markStart(n);
