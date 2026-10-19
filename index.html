@@ -104,6 +104,29 @@ h1{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.01e
 /* exercise card */
 .ex{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .ex.complete{border-color:var(--ok)}
+.anim{position:relative;aspect-ratio:4/3;max-width:100%;background:#fff;overflow:hidden}
+.anim img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.anim img.b{animation:swap 2.4s ease-in-out infinite}
+@keyframes swap{0%,38%{opacity:0}50%,88%{opacity:1}100%{opacity:0}}
+.anim .mine{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:12.5px;font-weight:700;padding:6px 10px;border-radius:99px}
+.anim .lbl{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 8px;border-radius:6px}
+.how{display:grid;gap:8px}
+.how ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:14.5px;line-height:1.4}
+.how .mus{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.how .err{font-size:14px;padding:8px 10px;border-radius:8px;background:var(--sunk)}
+.how .err b{color:var(--s1)}
+details.more{border-top:1px solid var(--line);margin-top:2px}
+details.more summary{list-style:none;cursor:pointer;padding:10px 0 2px;font-weight:700;font-size:14px;color:var(--acc);display:flex;align-items:center;gap:6px}
+.s3 details.more summary{color:var(--ink)}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:2px;transition:transform .2s}
+details.more[open] summary::after{transform:rotate(-135deg) translateY(-2px)}
+details.more .inner{display:grid;gap:10px;padding-top:8px}
+.rowwrap{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rowwrap .row{border:0;border-radius:0}
+.rowwrap details.more{margin:0 12px 10px}
+.rowwrap .anim{border-radius:10px}
+@media (prefers-reduced-motion:reduce){.anim img.b{animation:none;opacity:0}}
 .photo{position:relative;aspect-ratio:16/9;max-width:100%;background:var(--sunk);display:grid;place-items:center;overflow:hidden}
 .photo img{width:100%;height:100%;object-fit:cover;display:block}
 .photo .ph{display:grid;justify-items:center;gap:6px;color:var(--muted);font-size:14px;font-weight:600;padding:12px;text-align:center}
@@ -269,6 +292,8 @@ const STRETCH=[
 ];
 const POST=[{id:'acqua',name:'Acqua',cue:'Mezzo litro subito.'},{id:'creatina',name:'Creatina',cue:'Sempre dopo l\'allenamento.'}];
 
+const HOW={"cardio": {"m": "Riscaldamento generale", "s": ["Regola la sella: a pedale in basso il ginocchio resta appena flesso.", "Resistenza bassa, cadenza sciolta (70-80 pedalate al minuto).", "Ritmo da conversazione: devi riuscire a parlare senza fiatone."], "e": "Partire forte: qui serve solo scaldare."}, "mob-spalle": {"m": "Spalle, trapezi", "s": ["In piedi, braccia rilassate lungo i fianchi.", "Porta le spalle su verso le orecchie, poi indietro, giù e avanti: un cerchio ampio.", "30\" in un senso, poi 30\" nell'altro, lento."], "e": "Muovere le braccia invece delle spalle."}, "mob-torace": {"m": "Petto, spalle anteriori", "s": ["In piedi, braccia tese davanti all'altezza delle spalle.", "Aprile all'indietro portando le scapole a toccarsi, petto in fuori.", "Richiudi davanti e ripeti con ritmo controllato per 60\"."], "e": "Inarcare la zona lombare per aprire di più."}, "mob-anche": {"m": "Anche, glutei", "s": ["In piedi, una mano su un appoggio per l'equilibrio.", "Solleva il ginocchio all'altezza dell'anca e disegna un cerchio verso l'esterno.", "15\" per gamba in un senso, poi 15\" per gamba nel senso opposto."], "e": "Ruotare il busto insieme alla gamba."}, "mob-caviglie": {"m": "Caviglie, polpacci", "s": ["Mani al muro, un piede avanti e uno indietro.", "Spingi il ginocchio davanti oltre la punta del piede, tallone sempre a terra.", "Molleggia piano 30\" per lato. Prepara caviglie per pressa e affondi."], "e": "Staccare il tallone dal pavimento."}, "plank": {"m": "Addome, core", "s": ["Avambracci a terra, gomiti esattamente sotto le spalle.", "Corpo in linea da testa a talloni: glutei e addome contratti.", "Respira normale e tieni la posizione per il tempo indicato."], "e": "Bacino che cade o glutei troppo alti."}, "pallof": {"m": "Addome, obliqui (anti-rotazione)", "s": ["Cavo all'altezza del petto, ti metti di fianco alla colonna, mezzo passo via.", "Piede lato cavo arretrato, peso sul piede lontano. Maniglia al petto con due mani.", "Spingi le braccia dritte avanti, tieni 2\" senza farti ruotare, torna al petto."], "e": "Lasciarsi tirare verso il cavo ruotando il busto."}, "squat-leva": {"m": "Quadricipiti, glutei", "s": ["Schiena tutta appoggiata, spalle sotto i cuscinetti, piedi a metà pedana larghezza spalle.", "Sblocca il fermo e scendi controllato fino a cosce parallele.", "Spingi con tutto il piede e risali senza bloccare le ginocchia."], "e": "Ginocchia che cedono verso l'interno, talloni che si staccano."}, "panca": {"m": "Petto, tricipiti, spalle anteriori", "s": ["Sdraiato, occhi sotto il bilanciere, piedi a terra. Scapole strette e basse.", "Presa poco più larga delle spalle. Stacca e porta il bilanciere sopra il petto.", "Scendi controllato a metà sterno, gomiti a 45° dal busto, e spingi su."], "e": "Rimbalzare sul petto o staccare i glutei dalla panca."}, "lat": {"m": "Dorsali, bicipiti", "s": ["Seduto con cosce bloccate, presa larga sulla barra.", "Petto alto, porta la barra alla parte alta del petto tirando i gomiti giù e indietro.", "Risali lento fino a braccia quasi tese."], "e": "Dondolare col busto o tirare dietro la nuca."}, "iperestensioni": {"m": "Lombari, glutei, femorali", "s": ["Anche appoggiate al cuscino, caviglie bloccate, braccia incrociate sul petto.", "Scendi piegandoti dalle anche, schiena dritta.", "Risali fino a corpo in linea con le gambe, non oltre. 2\" su e 2\" giù."], "e": "Iperestendere la schiena in alto."}, "military": {"m": "Spalle, tricipiti", "s": ["Seduto con schienale verticale, manubri all'altezza delle orecchie, palmi avanti.", "Spingi in alto finché le braccia sono quasi tese, i manubri si avvicinano.", "Scendi controllato fino all'altezza delle orecchie."], "e": "Inarcare la schiena staccandola dallo schienale."}, "alzate": {"m": "Deltoide laterale", "s": ["In piedi, manubri ai fianchi, gomiti appena piegati.", "Alza le braccia di lato fino all'altezza delle spalle, mignolo leggermente alto.", "Scendi lento, senza appoggiare i manubri ai fianchi."], "e": "Slanciare col busto o salire oltre le spalle."}, "rematore": {"m": "Dorsali, romboidi, bicipiti", "s": ["Ginocchio e mano dello stesso lato sulla panca, schiena piatta.", "Tira il manubrio portando il gomito verso l'anca, vicino al corpo.", "Scendi fino a braccio teso, senza ruotare il busto."], "e": "Ruotare il busto per tirare più peso."}, "curl-alt": {"m": "Bicipiti", "s": ["In piedi, manubri ai fianchi, palmi verso le cosce.", "Sali con un braccio ruotando il polso verso l'alto, gomito fermo al fianco.", "Scendi lento e alterna l'altro braccio."], "e": "Portare il gomito avanti o slanciare."}, "pushdown": {"m": "Tricipiti", "s": ["Davanti al cavo alto, presa sulla barra, gomiti incollati ai fianchi.", "Spingi giù fino a braccia completamente tese.", "Risali controllato fino ad avambracci paralleli al pavimento."], "e": "Muovere i gomiti avanti e indietro."}, "croci-cavi": {"m": "Petto, zona sternale", "s": ["In piedi al centro, cavi in posizione 12 (metà altezza), un piede avanti.", "Gomiti appena piegati e fissi: porta le mani avanti con un arco.", "Incrocia oltre la linea centrale, tieni 1\" stringendo il petto, torna lento."], "e": "Piegare i gomiti trasformandola in una spinta."}, "chest-press": {"m": "Petto, tricipiti", "s": ["Seduto, maniglie all'altezza del petto, schiena appoggiata.", "Spingi avanti fino a braccia quasi tese, senza staccare le scapole.", "Torna lento fino a sentire l'allungo del petto."], "e": "Bloccare i gomiti in fondo al movimento."}, "affondi": {"m": "Quadricipiti, glutei", "s": ["In piedi, fai un passo lungo in avanti.", "Scendi finché il ginocchio dietro sfiora il pavimento, busto dritto.", "Spingi col tallone davanti e torna su; alterna le gambe."], "e": "Ginocchio davanti che crolla verso l'interno."}, "pressa": {"m": "Quadricipiti, glutei", "s": ["Schiena e glutei appoggiati, piedi a metà pedana larghezza spalle.", "Sblocca e scendi finché le ginocchia arrivano a 90°.", "Spingi con tutto il piede senza bloccare le ginocchia in alto."], "e": "Staccare i glutei dallo schienale in fondo."}, "croci-incl": {"m": "Petto alto", "s": ["Panca a 30°, manubri sopra il petto, palmi che si guardano.", "Gomiti appena piegati e fissi: apri le braccia a ventaglio.", "Scendi fino a sentire l'allungo, poi richiudi come ad abbracciare un albero."], "e": "Scendere troppo con carico pesante."}, "curl-cavi": {"m": "Bicipiti", "s": ["Doppia puleggia, cavo basso, presa con palmi in su.", "Gomiti fermi ai fianchi, porta le mani verso le spalle.", "Scendi lento mantenendo la tensione, senza rilassare in alto."], "e": "Muovere i gomiti in avanti."}, "skull": {"m": "Tricipiti", "s": ["Sdraiato sulla panca, manubrio a due mani a coppa sotto il disco, braccia verso il soffitto.", "Gomiti fermi: piega solo gli avambracci portando il manubrio verso la fronte.", "Estendi di nuovo fino a braccia tese."], "e": "Aprire i gomiti o muoverli avanti e indietro."}, "st-petto": {"m": "Petto, spalla anteriore", "s": ["Di fianco al muro o allo stipite, avambraccio appoggiato con gomito a 90°.", "Ruota busto e piedi lentamente dalla parte opposta.", "Tieni 30\" per lato respirando. Dopo croci e chest press è il più importante."], "e": "Forzare fino al dolore alla spalla."}, "st-tricipite": {"m": "Tricipiti", "s": ["Alza un braccio e piega il gomito: mano dietro la nuca.", "Con l'altra mano spingi il gomito indietro e in basso.", "Tieni 30\" per lato."], "e": "Inarcare la schiena."}, "st-bicipite": {"m": "Bicipiti, spalla anteriore", "s": ["Mani intrecciate dietro la schiena, braccia tese.", "Solleva leggermente le braccia aprendo il petto.", "Tieni 30\". In alternativa: palmo al muro dietro di te e ruota via."], "e": "Piegare i gomiti."}, "st-quad": {"m": "Quadricipiti", "s": ["Collo del piede appoggiato su una panca dietro di te, oppure afferra la caviglia in piedi.", "Ginocchia vicine, bacino spinto leggermente in avanti.", "Tieni 30\" per lato."], "e": "Inarcare la schiena invece di spingere il bacino."}, "st-femorali": {"m": "Femorali, polpacci", "s": ["Una gamba tesa avanti, tallone a terra e punta verso di te.", "Piegati in avanti dalle anche con la schiena dritta.", "Tieni 30\" per lato senza molleggiare."], "e": "Curvare la schiena per arrivare più in basso."}, "st-glutei": {"m": "Glutei, piriforme", "s": ["Sdraiato o seduto, caviglia appoggiata sul ginocchio opposto (figura 4).", "Avvicina la gamba d'appoggio al petto (o porta il busto avanti se seduto).", "Tieni 30\" per lato."], "e": "Spingere sul ginocchio fino a sentire fastidio."}, "st-flessori": {"m": "Flessori dell'anca, quadricipite", "s": ["Un ginocchio a terra, l'altro piede avanti a 90°.", "Contrai il gluteo e spingi il bacino in avanti, busto dritto.", "Tieni 30\" per lato. Dopo affondi e pressa serve molto."], "e": "Inarcare la zona lombare."}, "st-dorsali": {"m": "Dorsali, schiena", "s": ["In ginocchio, siediti sui talloni.", "Allunga le braccia avanti a terra e lascia scendere il petto.", "Tieni 60\" respirando lento verso la schiena."], "e": "Tenere le spalle contratte."}};
+const HAS_IMG=new Set(["cardio", "mob-spalle", "mob-torace", "mob-anche", "mob-caviglie", "plank", "pallof", "squat-leva", "panca", "lat", "iperestensioni", "military", "alzate", "rematore", "curl-alt", "pushdown", "croci-cavi", "chest-press", "affondi", "pressa", "croci-incl", "curl-cavi", "skull", "st-petto", "st-tricipite", "st-bicipite", "st-quad", "st-femorali", "st-glutei", "st-flessori", "st-dorsali"]);
 /* ---------- STORAGE ---------- */
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let db=null, assets=null;
@@ -283,6 +308,7 @@ async function loadPhotos(){try{const all=await IDB.all();for(const [k,b] of Obj
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 let live=LS.get('pg-live',{1:null,2:null,3:null});
 let tab=null, userPicked=false, firstSync=true;
+const openMore=new Set();
 
 /* ---------- HELPERS ---------- */
 const $=s=>document.querySelector(s);
@@ -352,13 +378,23 @@ function updateBar(){
   const p=progress(tab);$('#bar').style.width=(p.done/p.tot*100)+'%';
 }
 
+function animBox(id,name){
+  if(!HAS_IMG.has(id))return '';
+  return `<div class="anim"><img src="img/${id}-0.jpg" alt="${esc(name)}: posizione di partenza" loading="lazy"><img class="b" src="img/${id}-1.jpg" alt="" loading="lazy"><span class="lbl">Esecuzione</span></div>`;
+}
+function howBlock(id){
+  const h=HOW[id];if(!h)return '';
+  return `<div class="how"><span class="mus">${esc(h.m)}</span><ol>${h.s.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${h.e?`<div class="err"><b>Errore da evitare:</b> ${esc(h.e)}</div>`:''}</div>`;
+}
 function simpleRow(item,n,withTimer){
   const d=L(n).checks[item.id];
-  return `<div class="row ${d?'done':''}" data-simple="${item.id}">
+  const row=`<div class="row ${d?'done':''}" data-simple="${item.id}">
     <button class="chk" data-act="simple" data-id="${item.id}" aria-label="Fatto: ${esc(item.name)}" aria-pressed="${!!d}">${ICON_CHECK}</button>
     <div class="t"><b>${esc(item.name)}${item.dur?` · ${fmtRest(item.dur)}`:''}</b><small>${esc(item.cue)}</small></div>
     ${withTimer&&item.dur?`<button class="play" data-act="worktimer" data-id="${item.id}">${ICON_PLAY}${fmtRest(item.dur)}</button>`:'<span></span>'}
   </div>`;
+  if(!HOW[item.id])return row;
+  return `<div class="rowwrap">${row}<details class="more" data-more="${item.id}" ${openMore.has(item.id)?'open':''}><summary>Come si fa</summary><div class="inner">${animBox(item.id,item.name)}${howBlock(item.id)}</div></details></div>`;
 }
 
 function exCard(ex,n,idx){
@@ -371,9 +407,9 @@ function exCard(ex,n,idx){
   const prevTxt=prev?`Ultima (${dateIt(prev.ts)}): `+(ex.time?prev.sets.map(s=>s.reps+'"').join(' · '):prev.sets.map(s=>(s.kg?fmtKg(s.kg):'CL')+'×'+s.reps).join(' · ')):'';
   const q=encodeURIComponent((ex.q||ex.name)+' exercise');
   return `<article class="ex ${allDone?'complete':''}" data-ex="${ex.id}">
-    <div class="photo" data-act="photo" data-id="${ex.id}" role="button" tabindex="0" aria-label="${ph?'Cambia':'Aggiungi'} foto ${esc(ex.name)}">
-      ${ph?`<img src="${esc(ph)}" alt="${esc(ex.name)}" loading="lazy"><span class="chg">Cambia foto</span>`:`<div class="ph">${ICON_PLATE}<span>Tocca per aggiungere la foto<br>della macchina o dell'esecuzione</span></div>`}
-    </div>
+    ${ph?`<div class="photo" data-act="photo" data-id="${ex.id}" role="button" tabindex="0" aria-label="Cambia foto ${esc(ex.name)}"><img src="${esc(ph)}" alt="${esc(ex.name)}" loading="lazy"><span class="chg">Cambia foto</span></div>`
+      :HAS_IMG.has(ex.id)?animBox(ex.id,ex.name)
+      :`<div class="photo" data-act="photo" data-id="${ex.id}" role="button" tabindex="0" aria-label="Aggiungi foto ${esc(ex.name)}"><div class="ph">${ICON_PLATE}<span>Tocca per aggiungere la foto<br>della macchina o dell'esecuzione</span></div></div>`}
     <div class="exb">
       <div class="extop"><h3>${esc(ex.name)}</h3>${ex.extra?'<span class="tag">Extra</span>':(idx!=null?`<span class="tag">${idx}</span>`:'')}</div>
       <div class="meta">
@@ -383,11 +419,12 @@ function exCard(ex,n,idx){
       </div>
       <p class="cue">${esc(ex.cue)}</p>
       ${prevTxt?`<p class="cue" style="color:var(--ink);font-weight:600">${esc(prevTxt)}</p>`:''}
+      ${HOW[ex.id]?`<details class="more" data-more="${ex.id}" ${openMore.has(ex.id)?'open':''}><summary>Come si fa</summary><div class="inner">${ph&&HAS_IMG.has(ex.id)?animBox(ex.id,ex.name):''}${howBlock(ex.id)}</div></details>`:''}
       <div class="sets">
         <div class="sethead"><span>#</span><span>${ex.time?'':esc(kgLab)}</span><span>${repsLab}</span><span></span></div>
         ${sets.map((s,i)=>setRow(ex,s,i)).join('')}
       </div>
-      <div class="setctl"><div class="links"><a href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">Vedi esecuzione ↗</a></div>
+      <div class="setctl"><div class="links"><button data-act="photo" data-id="${ex.id}">${ph?'Cambia foto':'Foto tua'}</button><a href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">Vedi esecuzione ↗</a></div>
         <div><button data-act="delset" data-id="${ex.id}" aria-label="Togli una serie">− serie</button><button data-act="addset" data-id="${ex.id}" aria-label="Aggiungi una serie">+ serie</button></div></div>
     </div>
   </article>`;
@@ -559,6 +596,7 @@ document.addEventListener('click',e=>{
     if(b.dataset.armed){deleteSession(b.dataset.id)}else{b.dataset.armed='1';b.textContent='Conferma eliminazione';b.classList.add('danger');setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent='Elimina';b.classList.remove('danger')}},4000)}
   }
 });
+document.addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details.more')){d.open?openMore.add(d.dataset.more):openMore.delete(d.dataset.more)}},true);
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.photo')){e.preventDefault();e.target.click()}});
 document.addEventListener('change',e=>{
   const t=e.target,n=tab;
