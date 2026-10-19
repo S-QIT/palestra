@@ -131,7 +131,8 @@ details.more .inner{display:grid;gap:10px;padding-top:8px}
 .rowwrap{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .rowwrap .row{border:0;border-radius:0}
 .rowwrap details.more{margin:0 12px 10px}
-.rowwrap .anim{border-radius:10px}
+.rowimg .anim{aspect-ratio:16/10}
+.rowwrap .rowimg{position:relative}
 @media (prefers-reduced-motion:reduce){.anim img.b{animation:none;opacity:0}}
 .photo{position:relative;aspect-ratio:16/9;max-width:100%;background:var(--sunk);display:grid;place-items:center;overflow:hidden}
 .photo img{width:100%;height:100%;object-fit:cover;display:block}
@@ -401,7 +402,7 @@ function simpleRow(item,n,withTimer){
     ${withTimer&&item.dur?`<button class="play" data-act="worktimer" data-id="${item.id}">${ICON_PLAY}${fmtRest(item.dur)}</button>`:'<span></span>'}
   </div>`;
   if(!HOW[item.id])return row;
-  return `<div class="rowwrap">${row}<details class="more" data-more="${item.id}" ${openMore.has(item.id)?'open':''}><summary>Come si fa</summary><div class="inner">${animBox(item.id,item.name)}${howBlock(item.id)}</div></details></div>`;
+  return `<div class="rowwrap">${HAS_IMG.has(item.id)?`<div class="rowimg">${animBox(item.id,item.name)}</div>`:''}${row}<details class="more" data-more="${item.id}" ${openMore.has(item.id)?'open':''}><summary>Come si fa</summary><div class="inner">${howBlock(item.id)}</div></details></div>`;
 }
 
 function exCard(ex,n,idx){
