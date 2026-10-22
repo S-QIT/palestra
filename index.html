@@ -190,18 +190,35 @@ details.more .inner{display:grid;gap:10px;padding-top:8px}
 #timer.on{transform:none}
 #timer .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
 .ring{position:relative;width:96px;height:96px}
-.ring svg{width:96px;height:96px;transform:rotate(-90deg)}
-.ring circle{fill:none;stroke-width:8}
-.ring .bgc{stroke:var(--sunk)}
-.ring .fg{stroke:var(--acc);stroke-linecap:round;transition:stroke-dashoffset .2s linear}
-.ring .tv{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:30px}
-#timer.work .ring .fg{stroke:var(--ok)}
+.ring svg{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 24px rgba(0,0,0,.35))}
+#timer{--dlo:#0b110e;--dhi:#1d2b25;--tick:#d7e6dd;--num:#8ea597;--hand:var(--acc);--arc:var(--acc);--track:rgba(255,255,255,.08);--digit:#f3f8f5}
+#timer.work{--dlo:color-mix(in srgb,var(--s1) 55%,#000);--dhi:var(--s1);--tick:#f4fbf7;--num:rgba(244,251,247,.75);--hand:#ffffff;--arc:#ffffff;--track:rgba(0,0,0,.22);--digit:#ffffff}
+#timer.work.prep{--dlo:#2a312e;--dhi:#59635e;--tick:#eef2f0;--num:rgba(238,242,240,.7);--hand:#ffffff;--arc:#cfd8d3;--track:rgba(0,0,0,.25);--digit:#ffffff}
+.chrono .dlo{stop-color:var(--dlo)} .chrono .dhi{stop-color:var(--dhi)}
+.chrono .bgc{fill:none;stroke:var(--track);stroke-width:3.2}
+.chrono .fg{fill:none;stroke:var(--arc);stroke-width:3.2;stroke-linecap:round;transition:stroke-dashoffset .2s linear}
+.chrono .tk{stroke:var(--tick);stroke-width:.9;opacity:.75}
+.chrono .tk5{stroke:var(--tick);stroke-width:2.6}
+.chrono .num{fill:var(--num);font:700 9.5px var(--display);text-anchor:middle}
+.chrono .brand{fill:var(--num);font:800 7px var(--display);letter-spacing:2.4px;text-anchor:middle}
+.chrono .brand2{fill:var(--hand);font:700 5.5px var(--body);letter-spacing:2px;text-anchor:middle;opacity:.9}
+.chrono .hd{stroke:var(--hand);stroke-width:2.2;stroke-linecap:round}
+.chrono .hdc{fill:var(--hand)} .chrono .pin{fill:var(--dlo)}
+.chrono .dg{fill:var(--digit);font:800 47px var(--display);text-anchor:middle;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.chrono .win{fill:var(--dlo);stroke:var(--tick);stroke-opacity:.35;stroke-width:1}
+#timer.mini .chrono .num,#timer.mini .chrono .brand,#timer.mini .chrono .brand2,#timer.mini .chrono .tk{display:none}
+
+
+
+
+
+
 #timer .lab{font-family:var(--display);font-weight:800;font-size:20px;text-transform:uppercase;line-height:1}
 #timer .sub{font-size:14px;color:var(--muted);margin-top:4px;min-height:1.4em}
 #timer .btns{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 #timer .btns button{padding:8px 12px;border-radius:10px;background:var(--sunk);font-weight:700;font-size:14px}
 #timer .btns .skip{background:var(--ink);color:var(--bg)}
-#timer.prep .ring .fg{stroke:var(--muted)}
+
 #timer.prep .lab{color:var(--muted)}
 #timer.flip .lab{animation:flipin .45s ease}
 @keyframes flipin{0%{transform:translateY(8px);opacity:0}100%{transform:none;opacity:1}}
@@ -215,10 +232,10 @@ details.more .inner{display:grid;gap:10px;padding-top:8px}
 #timer:not(.mini).on{transform:none}
 #timer:not(.mini) .in{grid-template-columns:1fr;justify-items:center;text-align:center;gap:3vh;width:100%}
 #timer:not(.mini) .in>div:last-child{display:grid;justify-items:center;gap:1.4vh;width:100%}
-#timer:not(.mini) .ring{width:min(82vw,50vh);height:min(82vw,50vh);order:2}
+#timer:not(.mini) .ring{width:min(88vw,52vh);height:min(88vw,52vh);order:2}
 #timer:not(.mini) .ring svg{width:100%;height:100%}
-#timer:not(.mini) .ring circle{stroke-width:7}
-#timer:not(.mini) .ring .tv{font-size:min(24vw,15vh);letter-spacing:-.02em}
+
+
 #timer:not(.mini) .in>div:last-child{order:1}
 #timer:not(.mini) .lab{font-size:min(10vw,6vh);line-height:1.02;text-wrap:balance}
 #timer:not(.mini) .sub{font-size:min(5vw,2.8vh);margin:0;color:inherit;opacity:.8}
@@ -228,13 +245,13 @@ details.more .inner{display:grid;gap:10px;padding-top:8px}
 #timer:not(.mini) .btns .skip{background:var(--ink);color:var(--bg)}
 /* lavoro: verde pieno, leggibile da lontano */
 #timer.work:not(.mini){background:var(--s1);color:var(--on-s1)}
-#timer.work:not(.mini) .ring .bgc{stroke:rgba(0,0,0,.18)}
-#timer.work:not(.mini) .ring .fg{stroke:var(--on-s1)}
+
+
 #timer.work:not(.mini) .btns .skip{background:var(--on-s1);color:var(--s1)}
 /* cambio lato: grigio */
 #timer.work.prep:not(.mini){background:color-mix(in srgb,var(--ink) 30%,var(--bg));color:var(--ink)}
-#timer.work.prep:not(.mini) .ring .fg{stroke:var(--muted)}
-#timer.work.prep:not(.mini) .ring .bgc{stroke:var(--line)}
+
+
 #timer.work.prep:not(.mini) .lab{color:var(--ink)}
 /* ultimi 3 secondi */
 #timer.alert:not(.mini){animation:pulse 1s ease-in-out infinite}
@@ -285,7 +302,7 @@ details.more .inner{display:grid;gap:10px;padding-top:8px}
 
 <div id="timer" role="timer" aria-live="polite">
   <div class="in">
-    <div class="ring"><svg viewBox="0 0 96 96"><circle class="bgc" cx="48" cy="48" r="42"/><circle class="fg" id="ringfg" cx="48" cy="48" r="42" stroke-dasharray="263.9" stroke-dashoffset="0"/></svg><div class="tv" id="tv">0:00</div></div>
+    <div class="ring"><svg class="chrono" viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="bz" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3f6f5"/><stop offset=".28" stop-color="#9aa6a1"/><stop offset=".5" stop-color="#eef2f0"/><stop offset=".75" stop-color="#6f7a75"/><stop offset="1" stop-color="#d6ddda"/></linearGradient><radialGradient id="dl" cx=".5" cy=".38" r=".7"><stop offset="0" class="dhi"/><stop offset="1" class="dlo"/></radialGradient></defs><circle cx="100" cy="100" r="99.5" fill="url(#bz)"/><circle cx="100" cy="100" r="93.5" fill="#050807"/><circle cx="100" cy="100" r="92" fill="url(#dl)"/><g transform="rotate(-90 100 100)"><circle class="bgc" cx="100" cy="100" r="88.5"/><circle class="fg" id="ringfg" cx="100" cy="100" r="88.5" stroke-dasharray="556.06" stroke-dashoffset="0"/></g><line x1="100.00" y1="26.00" x2="100.00" y2="16.00" class="tk5"/><line x1="108.26" y1="21.43" x2="108.78" y2="16.46" class="tk"/><line x1="116.43" y1="22.73" x2="117.46" y2="17.84" class="tk"/><line x1="124.41" y1="24.87" x2="125.96" y2="20.11" class="tk"/><line x1="132.13" y1="27.83" x2="134.17" y2="23.26" class="tk"/><line x1="137.00" y1="35.91" x2="142.00" y2="27.25" class="tk5"/><line x1="146.44" y1="36.09" x2="149.37" y2="32.04" class="tk"/><line x1="152.86" y1="41.29" x2="156.21" y2="37.58" class="tk"/><line x1="158.71" y1="47.14" x2="162.42" y2="43.79" class="tk"/><line x1="163.91" y1="53.56" x2="167.96" y2="50.63" class="tk"/><line x1="164.09" y1="63.00" x2="172.75" y2="58.00" class="tk5"/><line x1="172.17" y1="67.87" x2="176.74" y2="65.83" class="tk"/><line x1="175.13" y1="75.59" x2="179.89" y2="74.04" class="tk"/><line x1="177.27" y1="83.57" x2="182.16" y2="82.54" class="tk"/><line x1="178.57" y1="91.74" x2="183.54" y2="91.22" class="tk"/><line x1="174.00" y1="100.00" x2="184.00" y2="100.00" class="tk5"/><line x1="178.57" y1="108.26" x2="183.54" y2="108.78" class="tk"/><line x1="177.27" y1="116.43" x2="182.16" y2="117.46" class="tk"/><line x1="175.13" y1="124.41" x2="179.89" y2="125.96" class="tk"/><line x1="172.17" y1="132.13" x2="176.74" y2="134.17" class="tk"/><line x1="164.09" y1="137.00" x2="172.75" y2="142.00" class="tk5"/><line x1="163.91" y1="146.44" x2="167.96" y2="149.37" class="tk"/><line x1="158.71" y1="152.86" x2="162.42" y2="156.21" class="tk"/><line x1="152.86" y1="158.71" x2="156.21" y2="162.42" class="tk"/><line x1="146.44" y1="163.91" x2="149.37" y2="167.96" class="tk"/><line x1="137.00" y1="164.09" x2="142.00" y2="172.75" class="tk5"/><line x1="132.13" y1="172.17" x2="134.17" y2="176.74" class="tk"/><line x1="124.41" y1="175.13" x2="125.96" y2="179.89" class="tk"/><line x1="116.43" y1="177.27" x2="117.46" y2="182.16" class="tk"/><line x1="108.26" y1="178.57" x2="108.78" y2="183.54" class="tk"/><line x1="100.00" y1="174.00" x2="100.00" y2="184.00" class="tk5"/><line x1="91.74" y1="178.57" x2="91.22" y2="183.54" class="tk"/><line x1="83.57" y1="177.27" x2="82.54" y2="182.16" class="tk"/><line x1="75.59" y1="175.13" x2="74.04" y2="179.89" class="tk"/><line x1="67.87" y1="172.17" x2="65.83" y2="176.74" class="tk"/><line x1="63.00" y1="164.09" x2="58.00" y2="172.75" class="tk5"/><line x1="53.56" y1="163.91" x2="50.63" y2="167.96" class="tk"/><line x1="47.14" y1="158.71" x2="43.79" y2="162.42" class="tk"/><line x1="41.29" y1="152.86" x2="37.58" y2="156.21" class="tk"/><line x1="36.09" y1="146.44" x2="32.04" y2="149.37" class="tk"/><line x1="35.91" y1="137.00" x2="27.25" y2="142.00" class="tk5"/><line x1="27.83" y1="132.13" x2="23.26" y2="134.17" class="tk"/><line x1="24.87" y1="124.41" x2="20.11" y2="125.96" class="tk"/><line x1="22.73" y1="116.43" x2="17.84" y2="117.46" class="tk"/><line x1="21.43" y1="108.26" x2="16.46" y2="108.78" class="tk"/><line x1="26.00" y1="100.00" x2="16.00" y2="100.00" class="tk5"/><line x1="21.43" y1="91.74" x2="16.46" y2="91.22" class="tk"/><line x1="22.73" y1="83.57" x2="17.84" y2="82.54" class="tk"/><line x1="24.87" y1="75.59" x2="20.11" y2="74.04" class="tk"/><line x1="27.83" y1="67.87" x2="23.26" y2="65.83" class="tk"/><line x1="35.91" y1="63.00" x2="27.25" y2="58.00" class="tk5"/><line x1="36.09" y1="53.56" x2="32.04" y2="50.63" class="tk"/><line x1="41.29" y1="47.14" x2="37.58" y2="43.79" class="tk"/><line x1="47.14" y1="41.29" x2="43.79" y2="37.58" class="tk"/><line x1="53.56" y1="36.09" x2="50.63" y2="32.04" class="tk"/><line x1="63.00" y1="35.91" x2="58.00" y2="27.25" class="tk5"/><line x1="67.87" y1="27.83" x2="65.83" y2="23.26" class="tk"/><line x1="75.59" y1="24.87" x2="74.04" y2="20.11" class="tk"/><line x1="83.57" y1="22.73" x2="82.54" y2="17.84" class="tk"/><line x1="91.74" y1="21.43" x2="91.22" y2="16.46" class="tk"/><text x="132.00" y="47.77" class="num">5</text><text x="155.43" y="71.20" class="num">10</text><text x="164.00" y="103.20" class="num">15</text><text x="155.43" y="135.20" class="num">20</text><text x="132.00" y="158.63" class="num">25</text><text x="100.00" y="167.20" class="num">30</text><text x="68.00" y="158.63" class="num">35</text><text x="44.57" y="135.20" class="num">40</text><text x="36.00" y="103.20" class="num">45</text><text x="44.57" y="71.20" class="num">50</text><text x="68.00" y="47.77" class="num">55</text><text x="100.00" y="39.20" class="num">60</text><text x="100" y="56" class="brand">PALESTRA</text><text x="100" y="64.5" class="brand2">CHRONO</text><g id="hand"><line x1="100" y1="116" x2="100" y2="20" class="hd"/><circle cx="100" cy="114" r="3.6" class="hdc"/></g><circle cx="100" cy="100" r="4.6" class="hdc"/><circle cx="100" cy="100" r="1.8" class="pin"/><rect x="53" y="114" width="94" height="52" rx="11" class="win"/><text x="100" y="157" class="dg" id="tv">0:00</text></svg></div>
     <div style="min-width:0">
       <div class="lab" id="tlab">Recupero</div>
       <div class="sub" id="tsub"></div>
@@ -590,19 +607,21 @@ imp.addEventListener('change',async()=>{const f=imp.files&&imp.files[0];if(!f)re
 
 /* ---------- TIMER ---------- */
 let T=null, tInt=null, ac=null, wake=null;
-const CIRC=263.9;
+const CIRC=556.06;
 function unlockAudio(){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){}}
 function beep(f=880,d=.14,w=0){if(!ac)return;try{const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+w;o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
 function buzz(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
 async function requestWake(){try{if('wakeLock' in navigator&&!wake){wake=await navigator.wakeLock.request('screen');wake.addEventListener('release',()=>{wake=null})}}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&(T||(tab!=='h'&&live[tab]&&live[tab].start)))requestWake()});
 
+let handRaf=0;
+function handLoop(){if(!T){handRaf=0;return}const el=Math.max(0,T.total-left());const a=(el%60)/60*360;const h=document.getElementById('hand');if(h)h.setAttribute('transform',`rotate(${a.toFixed(2)} 100 100)`);handRaf=requestAnimationFrame(handLoop)}
 function startTimer(o){
   T={...o,pi:0,end:Date.now()+o.total*1000,paused:null,lastSec:null,ended:false};
   const el=$('#timer');el.classList.remove('ended');el.classList.toggle('work',o.mode==='work');el.classList.add('on');
   document.body.classList.add('has-timer');
   $('#tpause').textContent='Pausa';el.classList.remove('prep');phaseText();
-  clearInterval(tInt);tInt=setInterval(tick,200);tick();requestWake();beep(660,.08);
+  clearInterval(tInt);tInt=setInterval(tick,200);tick();if(!handRaf)handRaf=requestAnimationFrame(handLoop);requestWake();beep(660,.08);
 }
 function phaseText(){
   if(T.phases&&T.phases.length>1){const p=T.phases[T.pi],works=T.phases.filter(x=>x.work),wi=works.indexOf(p);
