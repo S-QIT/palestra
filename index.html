@@ -48,7 +48,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,var(--glow),transparent 60%
 body{color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 32px;
   font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
-body.has-timer{padding-bottom:190px}
+body.has-timer.tmini{padding-bottom:190px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
 .s1{--acc:var(--s1);--on-acc:var(--on-s1)} .s2{--acc:var(--s2);--on-acc:var(--on-s2)} .s3{--acc:var(--s3);--on-acc:var(--on-s3)}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -208,6 +208,41 @@ details.more .inner{display:grid;gap:10px;padding-top:8px}
 #timer .lab{font-size:24px}
 #timer.ended{animation:flash .5s ease 3}
 #timer.ended .lab{color:var(--ok)}
+/* ---- timer a schermo intero (default) ---- */
+#timer:not(.mini){inset:0;border-top:0;box-shadow:none;display:flex;align-items:center;justify-content:center;
+  padding:calc(24px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));
+  background:var(--bg);transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1),background-color .35s}
+#timer:not(.mini).on{transform:none}
+#timer:not(.mini) .in{grid-template-columns:1fr;justify-items:center;text-align:center;gap:3vh;width:100%}
+#timer:not(.mini) .in>div:last-child{display:grid;justify-items:center;gap:1.4vh;width:100%}
+#timer:not(.mini) .ring{width:min(82vw,50vh);height:min(82vw,50vh);order:2}
+#timer:not(.mini) .ring svg{width:100%;height:100%}
+#timer:not(.mini) .ring circle{stroke-width:7}
+#timer:not(.mini) .ring .tv{font-size:min(24vw,15vh);letter-spacing:-.02em}
+#timer:not(.mini) .in>div:last-child{order:1}
+#timer:not(.mini) .lab{font-size:min(10vw,6vh);line-height:1.02;text-wrap:balance}
+#timer:not(.mini) .sub{font-size:min(5vw,2.8vh);margin:0;color:inherit;opacity:.8}
+#timer:not(.mini) .btns{position:fixed;left:0;right:0;bottom:0;justify-content:center;gap:10px;margin:0;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+#timer:not(.mini) .btns button{padding:16px 18px;font-size:18px;border-radius:14px;min-width:64px;background:rgba(127,127,127,.18);color:inherit}
+#timer:not(.mini) .btns .skip{background:var(--ink);color:var(--bg)}
+/* lavoro: verde pieno, leggibile da lontano */
+#timer.work:not(.mini){background:var(--s1);color:var(--on-s1)}
+#timer.work:not(.mini) .ring .bgc{stroke:rgba(0,0,0,.18)}
+#timer.work:not(.mini) .ring .fg{stroke:var(--on-s1)}
+#timer.work:not(.mini) .btns .skip{background:var(--on-s1);color:var(--s1)}
+/* cambio lato: grigio */
+#timer.work.prep:not(.mini){background:color-mix(in srgb,var(--ink) 30%,var(--bg));color:var(--ink)}
+#timer.work.prep:not(.mini) .ring .fg{stroke:var(--muted)}
+#timer.work.prep:not(.mini) .ring .bgc{stroke:var(--line)}
+#timer.work.prep:not(.mini) .lab{color:var(--ink)}
+/* ultimi 3 secondi */
+#timer.alert:not(.mini){animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{filter:brightness(1.35)}}
+#timer.ended:not(.mini){animation:flash .5s ease 3}
+#timer.ended:not(.mini) .lab{color:inherit}
+#timer .mini-t{background:transparent!important;text-decoration:underline;text-underline-offset:3px}
+@media (prefers-reduced-motion:reduce){#timer.alert{animation:none!important}}
 @keyframes flash{50%{background:var(--ok)}}
 
 /* history */
@@ -259,6 +294,7 @@ details.more .inner{display:grid;gap:10px;padding-top:8px}
         <button id="tplus" type="button">+15"</button>
         <button id="tpause" type="button">Pausa</button>
         <button id="tskip" class="skip" type="button">Salta</button>
+        <button id="tmini" class="mini-t" type="button">Riduci</button>
       </div>
     </div>
   </div>
@@ -585,6 +621,7 @@ function tick(){
   $('#tv').textContent=fmtTime(l);
   $('#ringfg').style.strokeDashoffset=String(CIRC*(1-Math.max(0,l)/T.total));
   const sec=Math.ceil(l);
+  $('#timer').classList.toggle('alert',sec<=3&&sec>0&&T.paused==null);
   if(sec<=3&&sec>0&&sec!==T.lastSec){T.lastSec=sec;beep(740,.09)}
   if(l<=0&&!T.ended){if(T.phases&&T.pi<T.phases.length-1)nextPhase();else finishTimer();}
 }
@@ -597,10 +634,14 @@ function finishTimer(){
   setTimeout(()=>{if(T===keep)hideTimer()},T.mode==='rest'?3500:900);
   cb&&cb();
 }
-function hideTimer(){T=null;clearInterval(tInt);$('#timer').classList.remove('on','ended');document.body.classList.remove('has-timer')}
+function hideTimer(){T=null;clearInterval(tInt);$('#timer').classList.remove('on','ended','alert','prep');document.body.classList.remove('has-timer')}
 $('#tplus').onclick=()=>{if(!T||T.ended)return;if(T.paused!=null)T.paused+=15;else T.end+=15000;T.total=Math.max(T.total,left());tick()};
 $('#tminus').onclick=()=>{if(!T||T.ended)return;if(T.paused!=null)T.paused=Math.max(1,T.paused-15);else T.end-=15000;tick()};
 $('#tpause').onclick=()=>{if(!T||T.ended)return;if(T.paused==null){T.paused=left();$('#tpause').textContent='Riprendi'}else{T.end=Date.now()+T.paused*1000;T.paused=null;$('#tpause').textContent='Pausa'}};
+let miniPref=(()=>{try{return localStorage.getItem('pg-tmini')==='1'}catch(e){return false}})();
+function applyMini(){$('#timer').classList.toggle('mini',miniPref);document.body.classList.toggle('tmini',miniPref);$('#tmini').textContent=miniPref?'Schermo intero':'Riduci'}
+applyMini();
+$('#tmini').onclick=()=>{miniPref=!miniPref;try{localStorage.setItem('pg-tmini',miniPref?'1':'0')}catch(e){}applyMini()};
 $('#tskip').onclick=()=>{if(!T)return;const cb=T.mode==='work'&&!T.ended?T.onDone:null;hideTimer();cb&&cb()};
 
 /* ---------- AZIONI ---------- */
