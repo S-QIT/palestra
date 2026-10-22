@@ -116,6 +116,18 @@ h1{display:flex;align-items:center;gap:10px}
 @keyframes swap{0%,38%{opacity:0}50%,88%{opacity:1}100%{opacity:0}}
 .anim .mine{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:12.5px;font-weight:700;padding:6px 10px;border-radius:99px}
 .anim .lbl{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 8px;border-radius:6px}
+.goal{display:grid;gap:2px;padding:10px 12px;border-radius:12px;background:var(--sunk);border-left:4px solid var(--muted)}
+.goal.up,.goal.kg{border-left-color:var(--acc)}
+.goal .gl{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.goal b{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
+.goal.kg b{color:var(--acc)}
+.goal.down{border-left-color:var(--bad)}
+.goal small{font-size:13.5px;color:var(--ink)}
+.goal small.pv{color:var(--muted);font-size:12.5px}
+.feel{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.feel button{padding:7px 12px;border-radius:99px;background:var(--sunk);font-weight:700;font-size:13px;border:1px solid transparent}
+.feel button[aria-pressed="true"]{background:var(--acc);color:var(--on-acc)}
+.feel span{font-size:12.5px;color:var(--muted)}
 .how{display:grid;gap:8px}
 .how ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:14.5px;line-height:1.4}
 .how .mus{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -349,11 +361,45 @@ const ICON_PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15
 const ICON_PLATE='<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="11"/><circle cx="24" cy="24" r="3.5"/><path d="M36 8l4-4M40 12l4-4" stroke-linecap="round"/></svg>';
 
 /* ultima esecuzione di un esercizio dallo storico */
+function historyFor(exId,k=3){const out=[];for(const s of sortedSessions()){const e=(s.entries||[]).find(e=>e.id===exId);if(e&&e.sets&&e.sets.length){out.push({ts:s.ts,sets:e.sets,feel:e.feel||null});if(out.length>=k)break}}return out}
 function lastFor(exId){
-  for(const s of sessions){const e=(s.entries||[]).find(e=>e.id===exId);if(e&&e.sets&&e.sets.length)return {ts:s.ts,sets:e.sets}}
+  for(const s of sortedSessions()){const e=(s.entries||[]).find(e=>e.id===exId);if(e&&e.sets&&e.sets.length)return {ts:s.ts,sets:e.sets,feel:e.feel||null}}
   return null;
 }
 function sortedSessions(){return sessions.slice().sort((a,b)=>b.ts-a.ts)}
+/* ---------- PROGRESSIONE (doppia progressione) ---------- */
+function repRange(ex){if(ex.time)return [ex.time,60];const lo=ex.reps;return [lo,lo<=10?lo+2:lo+3]}
+function kgStep(ex){if(ex.unit&&ex.unit.includes('man')||['rematore','skull'].includes(ex.id))return 2;if(ex.id==='pressa')return 5;return 2.5}
+const FEEL={facile:'Facile',giusto:'Giusto',duro:'Duro'};
+function target(ex){
+  const prev=lastFor(ex.id),[lo,hi]=repRange(ex),n=ex.sets;
+  if(!prev){const sets=Array.from({length:n},()=>({kg:ex.time?null:ex.kg,reps:lo}));return {sets,why:'Primo giro: trova il carico giusto alla 1ª serie',kind:'new'}}
+  const feel=prev.feel||'giusto',st=kgStep(ex);let kinds=new Set();
+  // stallo: due volte di fila "duro" sullo stesso carico -> scarico del 10% e si riparte
+  const h=historyFor(ex.id,2);
+  if(!ex.time&&h.length===2&&h[0].feel==='duro'&&h[1].feel==='duro'){
+    const top=x=>Math.max(...x.sets.map(y=>+y.kg||0));
+    if(top(h[0])>0&&top(h[0])<=top(h[1])){
+      const sets=Array.from({length:n},(_,i)=>{const p=prev.sets[Math.min(i,prev.sets.length-1)];const kg=+p.kg||0;return {kg:kg?Math.max(0,Math.round(kg*0.9/st)*st):0,reps:lo}});
+      return {sets,why:'Due volte di fila dura sullo stesso peso: scarico del 10% e si riparte più puliti',kind:'down',feel:prev.feel};
+    }
+  }
+  const sets=Array.from({length:n},(_,i)=>{
+    const p=prev.sets[Math.min(i,prev.sets.length-1)],r=+p.reps||lo,kg=ex.time?null:(+p.kg||0);
+    if(ex.time){if(feel==='duro'){kinds.add('same');return {kg:null,reps:r}}const nx=Math.min(hi,r+(feel==='facile'?10:5));kinds.add(nx>r?'up':'same');return {kg:null,reps:nx}}
+    if(feel==='duro'){kinds.add('same');return {kg,reps:Math.max(Math.min(r,hi),lo)}}
+    if(r>=hi||(feel==='facile'&&r>=hi-1)){
+      if(kg===0){kinds.add('bw');return {kg:0,reps:hi}}
+      kinds.add('kg');return {kg:+(kg+st).toFixed(2),reps:lo}}
+    const nx=Math.min(hi,Math.max(lo,r)+(feel==='facile'?2:1));kinds.add(nx>r?'up':'same');return {kg,reps:nx};
+  });
+  let why,kind;
+  if(kinds.has('kg')){kind='kg';why=`Range ${lo}-${hi} chiuso: +${fmtKg(st)} kg dove ci sei arrivato, riparti da ${lo} rip`}
+  else if(kinds.has('bw')){kind='up';why='Range chiuso a corpo libero: la prossima volta prova con 2 manubri leggeri'}
+  else if(kinds.has('up')){kind='up';why=ex.time?`Più tempo rispetto all'ultima volta`:`Stesso carico, più ripetizioni: arrivato a ${hi} si sale di peso`}
+  else {kind='same';why=feel==='duro'?'Era dura: stesso carico e stesse ripetizioni, consolida':'Tieni questi numeri'}
+  return {sets,why,kind,feel:prev.feel};
+}
 function nextScheda(){
   const s=sortedSessions()[0];
   if(!s)return {n:1,last:null,hours:null};
@@ -365,14 +411,9 @@ function exList(n){return [...CORE,...SCHEDE[n].main]}
 function initLive(n){
   const sets={};
   for(const ex of exList(n)){
-    const prev=lastFor(ex.id);
-    const count=ex.sets;
-    sets[ex.id]=Array.from({length:count},(_,i)=>{
-      const p=prev&&prev.sets[Math.min(i,prev.sets.length-1)];
-      return {kg:ex.time?null:(p&&p.kg!=null?p.kg:ex.kg),reps:p&&p.reps!=null?p.reps:(ex.time||ex.reps),done:false};
-    });
+    sets[ex.id]=target(ex).sets.map(x=>({kg:x.kg,reps:x.reps,done:false}));
   }
-  return {start:null,checks:{},sets};
+  return {start:null,checks:{},sets,feel:{}};
 }
 function L(n){if(!live[n])live[n]=initLive(n);
   for(const ex of exList(n)) if(!live[n].sets[ex.id]) live[n].sets[ex.id]=initLive(n).sets[ex.id];
@@ -436,17 +477,21 @@ function exCard(ex,n,idx){
     <div class="exb">
       <div class="extop"><h3>${esc(ex.name)}</h3>${ex.extra?'<span class="tag">Extra</span>':(idx!=null?`<span class="tag">${idx}</span>`:'')}</div>
       <div class="meta">
-        <span class="acc">${ex.sets}×${ex.time?ex.time+'"':ex.reps}${ex.side?' per lato':''}</span>
+        <span class="acc">${ex.sets} × ${ex.time?ex.time+'"':repRange(ex).join('–')}${ex.side?' per lato':''}</span>
         <span>Rec. ${fmtRest(ex.rest)}</span>
         ${ex.note?`<span>${esc(ex.note)}</span>`:''}
       </div>
       <p class="cue">${esc(ex.cue)}</p>
-      ${prevTxt?`<p class="cue" style="color:var(--ink);font-weight:600">${esc(prevTxt)}</p>`:''}
+      ${(()=>{const t=target(ex);const same=t.sets.every(x=>x.kg===t.sets[0].kg&&x.reps===t.sets[0].reps);
+        const one=x=>ex.time?`${x.reps}"`:`${x.kg==null?'?':x.kg?fmtKg(x.kg):'CL'}×${x.reps}`;
+        const goal=same?(ex.time?`${t.sets.length} × ${t.sets[0].reps}"`:`${t.sets.length} × ${one(t.sets[0])}${t.sets[0].kg?' '+esc(ex.unit||'kg'):''}`):t.sets.map(one).join(' · ');
+        return `<div class="goal ${t.kind}"><span class="gl">Obiettivo di oggi${ex.side?' · per lato':''}</span><b>${goal}</b><small>${esc(t.why)}</small>${prevTxt?`<small class="pv">${esc(prevTxt)}${t.feel?' · '+FEEL[t.feel].toLowerCase():''}</small>`:''}</div>`})()}
       ${HOW[ex.id]?`<details class="more" data-more="${ex.id}" ${openMore.has(ex.id)?'open':''}><summary>Come si fa</summary><div class="inner">${ph&&HAS_IMG.has(ex.id)?animBox(ex.id,ex.name):''}${howBlock(ex.id)}</div></details>`:''}
       <div class="sets">
         <div class="sethead"><span>#</span><span>${ex.time?'':esc(kgLab)}</span><span>${repsLab}</span><span></span></div>
         ${sets.map((s,i)=>setRow(ex,s,i)).join('')}
       </div>
+      <div class="feel" role="group" aria-label="Com'è andata">${['facile','giusto','duro'].map(k=>`<button data-act="feel" data-id="${ex.id}" data-v="${k}" aria-pressed="${(L(n).feel||{})[ex.id]===k}">${FEEL[k]}</button>`).join('')}<span>com'è andata?</span></div>
       <div class="setctl"><div class="links"><button data-act="photo" data-id="${ex.id}">${ph?'Cambia foto':'Foto tua'}</button><a href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">Vedi esecuzione ↗</a></div>
         <div><button data-act="delset" data-id="${ex.id}" aria-label="Togli una serie">− serie</button><button data-act="addset" data-id="${ex.id}" aria-label="Aggiungi una serie">+ serie</button></div></div>
     </div>
@@ -622,6 +667,7 @@ document.addEventListener('click',e=>{
   }
   else if(a==='photo'){const f=$('#file');f.dataset.id=b.dataset.id;f.value='';f.click()}
   else if(a==='finish')openSummary(n);
+  else if(a==='feel'){const l=L(n);l.feel=l.feel||{};l.feel[b.dataset.id]=l.feel[b.dataset.id]===b.dataset.v?undefined:b.dataset.v;saveLive();b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(l.feel[b.dataset.id]===x.dataset.v)))}
   else if(a==='export')doExport();
   else if(a==='import')imp.click();
   else if(a==='copysess'){const s=sessions.find(x=>x.id===b.dataset.id);if(s)copyText(sessionText(s))}
@@ -661,14 +707,14 @@ function buildSession(n){
   const entries=[];
   for(const ex of exList(n)){
     const done=l.sets[ex.id].filter(s=>s.done).map(s=>({kg:ex.time?null:(s.kg??0),reps:s.reps??(ex.time||ex.reps)}));
-    if(done.length)entries.push({id:ex.id,name:ex.name,time:!!ex.time,sets:done});
+    if(done.length)entries.push({id:ex.id,name:ex.name,time:!!ex.time,sets:done,feel:(l.feel||{})[ex.id]||null});
   }
   return {id:'s'+now,ts:l.start||now,scheda:n,dur:l.start?Math.round((now-l.start)/60000):null,entries,
     creatina:!!l.checks.creatina,stretching:STRETCH.filter(s=>l.checks[s.id]).length};
 }
 function sessionText(s){
   const lines=[`${SCHEDE[s.scheda].name} — ${dateIt(s.ts)} ore ${timeIt(s.ts)}${s.dur?` (${s.dur} min)`:''}`];
-  for(const e of s.entries)lines.push(`- ${e.name}: `+(e.time?e.sets.map(x=>x.reps+'"').join(', '):e.sets.map(x=>(x.kg?fmtKg(x.kg)+' kg':'CL')+'×'+x.reps).join(', ')));
+  for(const e of s.entries)lines.push(`- ${e.name}: `+(e.time?e.sets.map(x=>x.reps+'"').join(', '):e.sets.map(x=>(x.kg?fmtKg(x.kg)+' kg':'CL')+'×'+x.reps).join(', '))+(e.feel?` (${FEEL[e.feel].toLowerCase()})`:''));
   if(s.stretching!=null)lines.push(`- Stretching: ${s.stretching}/8`);
   lines.push(`- Creatina: ${s.creatina?'sì':'no'}`);
   return lines.join('\n');
